@@ -1,8 +1,8 @@
 """This is your typical app, demonstrating usage."""
 
-from flask_jsondash.charts_builder import charts
-
 from flask import Flask
+
+from flask_jsondash.charts_builder import charts
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'NOTSECURELOL'

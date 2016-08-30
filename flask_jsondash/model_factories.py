@@ -1,14 +1,14 @@
 """Data generation utilities for all charts and dashboards."""
 
-from datetime import datetime as dt
 import json
+from datetime import datetime as dt
 from random import choice, randrange
 from uuid import uuid1
 
 from werkzeug.datastructures import ImmutableMultiDict
 
-import db_adapters
-import settings
+from flask_jsondash import settings, db_adapters
+from flask_jsondash.adapters.utils import format_modules
 
 
 def get_random_group():
@@ -29,7 +29,7 @@ def make_fake_dashboard(name='Random chart', max_charts=10):
     return dict(
         name=name,
         date=dt.now(),
-        modules=db_adapters._format_modules(charts),
+        modules=format_modules(charts),
         id=str(uuid1()),
     )
 

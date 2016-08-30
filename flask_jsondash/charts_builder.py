@@ -2,16 +2,16 @@
 
 """The chart blueprint that houses all functionality."""
 
-import os
+from __future__ import absolute_import
+
 import json
+import os
 import uuid
 from datetime import datetime as dt
 
-from flask_jsondash import templates
-from flask_jsondash import static
-
-from flask import Blueprint
+from . import static, templates
 from flask import (
+    Blueprint,
     current_app,
     flash,
     redirect,
@@ -22,8 +22,12 @@ from flask import (
 )
 import jinja2
 
-import db_adapters as adapter
-from settings import (
+from . import db_adapters as adapter
+from .adapters.utils import (
+    format_modules,
+    reformat_data,
+)
+from .settings import (
     CHARTS_CONFIG,
 )
 
@@ -145,7 +149,7 @@ def update():
     if 'edit-raw' in request.form:
         try:
             data = json.loads(request.form.get('config'))
-            data = adapter.reformat_data(data, c_id)
+            data = reformat_data(data, c_id)
             # Update db
             adapter.update(c_id, data=data, fmt_modules=False)
         except (TypeError, ValueError):
@@ -168,7 +172,7 @@ def create():
     data = request.form
     d = dict(
         name=data['name'],
-        modules=adapter._format_modules(data),
+        modules=format_modules(data),
         date=dt.now(),
         id=str(uuid.uuid1()),
     )

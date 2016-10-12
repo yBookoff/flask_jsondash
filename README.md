@@ -1,5 +1,9 @@
 # Flask JSONDash
 
+[![Code Climate](https://codeclimate.com/github/christabor/flask_jsondash/badges/gpa.svg)](https://codeclimate.com/github/christabor/flask_jsondash)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/christabor/flask_jsondash/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/christabor/flask_jsondash/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/christabor/flask_jsondash/badges/build.png?b=master)](https://scrutinizer-ci.com/g/christabor/flask_jsondash/build-status/master)
+
 Easily configurable, chart dashboards from any arbitrary API endpoint. JSON config only. Ready to go.
 
 ![kitchensink screenshot 2](examples/screenshots/kitchensink2.png)
@@ -24,6 +28,31 @@ If you want to see all/most charts in action, you'll need to fire up the `endpoi
 
 ## Usage
 
+### Quickstart
+
+**Method 1 - use provided flask app**
+
+```shell
+git clone https://github.com/christabor/flask_jsondash.git
+cd flask_jsondash
+virtualenv env
+source env/bin/activate
+python setup.py install
+python app.py
+```
+
+This will setup the app in a virtual environment and run the included test app (`app.py`) immediately on port `5002`.
+
+If you want to import the blueprint into your own existing flask instance:
+
+**Method 2 - use your existing app**
+
+```shell
+pip install flask-jsondash
+```
+
+Your app will need to import and register the blueprint, as well as have the appropriate template tags. [An example of this can be found here](templates/layouts/base.html).
+
 ### Requirements
 
 ### Core
@@ -38,7 +67,7 @@ These are not included, as you are likely going to have them yourself. If you do
 * Jquery (JS)
 * Bootstrap (CSS/JS)
 
-These are necessary and included, based simply on the likelihood they may not alread be used:
+These are necessary and included, based simply on the likelihood they may not already be used:
 
 * JRespond (JS)
 * SugarJS (JS)
@@ -136,17 +165,21 @@ Below are global app config flags. Their default values are represented in the e
 
 `app.config['JSONDASH_FILTERUSERS'] = False`: for filtering dashboards by the logged in user. See above for setting user data.
 
-`app.config['JSONDASH_GLOBALDASH'] = True`: for allowing "global" dashboards to be shown. These dashboards must have a created_user of "global" or be overriden (see below).
+`app.config['JSONDASH_GLOBALDASH'] = True`: for allowing "global" dashboards to be shown. These dashboards must have a created_user of "global" or be overridden (see below).
 
 `app.config['JSONDASH_GLOBAL_USER'] = "global"`: An owner name to use when allowing global dashboards to be seen. This is set on the `created_by` property in the specific json config. See above for more examples.
 
 `app.config['JSONDASH_MAX_PERPAGE'] = 50`: The number of results to show per page. Remaining results will be paginated.
 
+## Versioning
+
+This project uses semantic versioning for releases. However, the master branch is considered to be unstable as it represents "bleeding edge" with updates, hotfixes, etc... that eventually get tagged with a release. If you want to use a stable version, make sure to pin the specific release you want to target.
+
 ## FAQs
 
 **Q**: "Why'd you choose to expose library X, Y, or Z?"
 
-*A*: I tried to go for libraries that are pretty widely known and popular. If you are dissastisfied with what's exposed, you can always add your own by embeddding any js/css and html in a template, and loading it through the `iframe` option.
+*A*: I tried to go for libraries that are pretty widely known and popular. If you are dissatisfied with what's exposed, you can always add your own by embedding any js/css and html in a template, and loading it through the `iframe` option.
 
 **Q**: "How do I customize X, Y, Z?"
 

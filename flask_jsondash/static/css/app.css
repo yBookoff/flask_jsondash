@@ -1,22 +1,15 @@
 body {
     background-color: #f1f1f1;
 }
-#charts-builder .item {
-    display: inline-block;
-    overflow: hidden;
-}
 
 /* Widgets */
 
 #charts-builder .widget {
-    clear: both;
     border-radius: 5px;
     border: 1px solid #ddd;
     background-color: #fff;
     border-bottom-width: 2px;
     border-bottom-color: #bbb;
-    position: absolute;
-    overflow: hidden; /* the onus for correct sizing is on the user who configures each widget, so we always hide overlapping content. */
 }
 #charts-builder .widget:hover {
     border-color: #85C785;
@@ -93,6 +86,7 @@ body {
     border-bottom: 1px solid #ccc;
     padding: 0.6em 1.2em;
     height: 35px !important;
+    line-height: 20px;
     overflow: hidden;
 }
 #charts-builder #view-builder.editing {
@@ -104,7 +98,7 @@ body {
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAALUlEQVQYV2M8fvz4fwYiACNIoaWlJSMhtaMK8YYQOHgsLCxMQKoYGRnP4lINANSKKF9X4C8fAAAAAElFTkSuQmCC);
 }
 #charts-builder .widget iframe,
-#charts-builder .widget > svg,
+#charts-builder .widget svg,
 #charts-builder .widget .chart-centered {
     margin: 0 auto;
     display: block;

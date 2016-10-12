@@ -35,7 +35,8 @@ from settings import (
 template_dir = os.path.dirname(templates.__file__)
 static_dir = os.path.dirname(static.__file__)
 
-Paginator = namedtuple('Paginator', 'count curr_page num_pages limit skip')
+Paginator = namedtuple('Paginator',
+                       'count per_page curr_page num_pages limit skip')
 
 charts = Blueprint(
     'jsondash',
@@ -83,7 +84,7 @@ def metadata(key=None):
     This allows loose coupling for enabling and setting
     metadata for each chart.
     """
-    metadata = dict()
+    _metadata = dict()
     conf = current_app.config
     conf_metadata = conf.get('JSONDASH', {}).get('metadata', None)
     # Also useful for getting arbitrary configuration keys.
@@ -94,8 +95,8 @@ def metadata(key=None):
             return None
     # Update all metadata values if the function exists.
     for k, func in conf_metadata.items():
-        metadata[k] = conf_metadata[k]()
-    return metadata
+        _metadata[k] = conf_metadata[k]()
+    return _metadata
 
 
 def setting(name, default=None):
@@ -138,20 +139,22 @@ def _static(filename):
     return send_from_directory(static_dir, filename)
 
 
-def paginator():
+def paginator(count=None):
     """Get pagination calculations in a compact format."""
+    if count is None:
+        count = adapter.count()
     per_page = setting('JSONDASH_PERPAGE')
     # Allow query parameter overrides.
     per_page = int(request.args.get('per_page', 0)) or per_page
     per_page = per_page if per_page > 2 else 2  # Prevent division errors etc
     curr_page = int(request.args.get('page', 1)) - 1
-    count = adapter.count()
     num_pages = count // per_page
     rem = count % per_page
     extra_pages = 2 if rem else 1
     pages = range(1, num_pages + extra_pages)
     return Paginator(
         limit=per_page,
+        per_page=per_page,
         curr_page=curr_page,
         skip=curr_page * per_page,
         num_pages=pages,
@@ -162,8 +165,8 @@ def paginator():
 @charts.route('/charts/', methods=['GET'])
 def dashboard():
     """Load all views."""
-    pagination = paginator()
-    opts = dict(limit=pagination.limit, skip=pagination.skip)
+    opts = dict()
+    views = []
     if setting('JSONDASH_FILTERUSERS'):
         opts.update(filter=dict(created_by=metadata(key='username')))
         views = list(adapter.read(**opts))
@@ -173,10 +176,14 @@ def dashboard():
             views += list(adapter.read(**opts))
     else:
         views = list(adapter.read(**opts))
-    if not views:
+    if views:
+        pagination = paginator(count=len(views))
+        opts.update(limit=pagination.limit, skip=pagination.skip)
+    else:
         pagination = None
     kwargs = dict(
         views=views,
+        view=None,
         paginator=pagination,
         total_modules=sum([len(view['modules']) for view in views]),
     )
@@ -230,7 +237,6 @@ def update():
         try:
             data = json.loads(request.form.get('config'))
             data = adapter.reformat_data(data, c_id)
-            data.update(**metadata())
             # Update db
             adapter.update(c_id, data=data, fmt_modules=False)
         except (TypeError, ValueError):
